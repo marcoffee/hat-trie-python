@@ -166,6 +166,18 @@ cdef class HatTrieMap:
 	cpdef size_t count(self, string key):
 		return self.hattrie.count(key)
 
+	cpdef size_t count_prefix(self, string prefix):
+		cdef c_const_prefix_iterator_pair_t iterators = self.hattrie.const_equal_prefix_range(prefix)
+		cdef c_const_prefix_iterator_t it = iterators.first
+		cdef c_const_prefix_iterator_t end = iterators.second
+		cdef size_t count = 0
+
+		while it != end:
+			inc(count)
+			inc(it)
+
+		return count
+
 	def longest_prefix(self, string key):
 		cdef c_const_iterator_t it = self.hattrie.const_longest_prefix(key)
 		cdef string prefix
