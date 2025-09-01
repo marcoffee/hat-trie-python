@@ -152,7 +152,10 @@ cdef class HatTrieMap:
 		return self.hattrie.insert(key, PyObjectSmartPtr(<c_value_t>value)).second
 
 	def update(self, map):
-		for k, v in map.items():
+		if isinstance(map, Mapping):
+			map = map.items()
+
+		for k, v in map:
 			self.hattrie.insert(<string>k, PyObjectSmartPtr(<c_value_t>v))
 
 	cpdef size_t count(self, string key):
