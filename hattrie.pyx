@@ -49,7 +49,7 @@ cdef class HatTrieMap:
 			raise KeyError(key)
 
 	def __setitem__(self, string key, object value):
-		self.hattrie.insert(key, PyObjectSmartPtr(<c_value_t>value))
+		self.hattrie[key] = PyObjectSmartPtr(<c_value_t>value)
 
 	def __delitem__(self, string key):
 		if self.hattrie.erase(key) == 0:
