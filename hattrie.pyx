@@ -106,6 +106,16 @@ cdef class HatTrieMap:
 	def setdefault(self, string key, object value):
 		return <p_value_t>self.hattrie.insert(key, PyObjectSmartPtr(<c_value_t>value)).first.value().get()
 
+	def copy(self):
+		cdef HatTrieMap new_map = HatTrieMap()
+		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_begin()
+
+		while it != self.hattrie.cend():
+			new_map.hattrie.insert(it.key(), it.value())
+			inc(it)
+
+		return new_map
+
 	cpdef cbool insert(self, string key, object value):
 		return self.hattrie.insert(key, PyObjectSmartPtr(<c_value_t>value)).second
 
