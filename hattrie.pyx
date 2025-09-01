@@ -18,8 +18,8 @@ cdef class HatTrieMap:
 
 	cdef htrie_map[char, PyObjectSmartPtr] hattrie
 
-	def __init__(self):
-		pass
+	def __init__(self, items = ()):
+		self.update(items)
 
 	cpdef cbool empty(self):
 		return self.hattrie.empty()
