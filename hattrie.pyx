@@ -1,5 +1,6 @@
 # distutils: language=c++
 
+from collections.abc import Mapping, MutableMapping
 from cpython.ref cimport PyObject
 from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
