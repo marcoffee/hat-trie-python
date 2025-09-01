@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Generator, Iterable, Mapping
+from collections.abc import Generator, Iterable, Mapping, MutableMapping
 from typing import overload
 
 
-class HatTrieMap[T]:
+class HatTrieMap[T] (MutableMapping[bytes, T]):
     def __init__(self, items: Mapping[bytes, T] | Iterable[tuple[bytes, T]]) -> None: ...
     def clear(self) -> None: ...
     def copy(self) -> HatTrieMap[T]: ...
