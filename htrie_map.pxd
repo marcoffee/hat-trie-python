@@ -31,12 +31,18 @@ cdef extern from "htrie_map.h" namespace "tsl" nogil:
 			prefix_iterator &operator++()
 			bool operator==(const prefix_iterator& lhs, const prefix_iterator& rhs)
 			bool operator!=(const prefix_iterator& lhs, const prefix_iterator& rhs)
+			void key(string& key_buffer_out) const
+			string key() const
+			T value() const
 
 		cppclass const_prefix_iterator:
 			const T &operator*()
 			const_prefix_iterator &operator++()
 			bool operator==(const const_prefix_iterator& lhs, const const_prefix_iterator& rhs)
 			bool operator!=(const const_prefix_iterator& lhs, const const_prefix_iterator& rhs)
+			void key(string& key_buffer_out) const
+			string key() const
+			T value() const
 
 		htrie_map() except +
 

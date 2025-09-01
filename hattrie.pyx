@@ -6,6 +6,7 @@ from cython.operator cimport dereference as deref
 from cython.operator cimport preincrement as inc
 from htrie_map cimport htrie_map
 from libcpp cimport bool as cbool
+from libcpp.pair cimport pair
 from libcpp.string cimport string
 from smartptr cimport PyObjectSmartPtr
 
@@ -13,6 +14,8 @@ ctypedef PyObject *c_value_t
 ctypedef object p_value_t
 ctypedef htrie_map[char, PyObjectSmartPtr] c_htrie_t
 ctypedef c_htrie_t.const_iterator c_const_iterator_t
+ctypedef c_htrie_t.const_prefix_iterator c_const_prefix_iterator_t
+ctypedef pair[c_const_prefix_iterator_t, c_const_prefix_iterator_t] c_const_prefix_iterator_pair_t
 
 _POP_MISSING = object()
 
@@ -175,6 +178,15 @@ cdef class HatTrieMap:
 				break
 
 			it = self.hattrie.const_longest_prefix_ks(prefix.data(), prefix.size() - 1)
+
+	def equal_prefix_range(self, string prefix):
+		cdef c_const_prefix_iterator_pair_t iterators = self.hattrie.const_equal_prefix_range(prefix)
+		cdef c_const_prefix_iterator_t it = iterators.first
+		cdef c_const_prefix_iterator_t end = iterators.second
+
+		while it != end:
+			yield (it.key(), <p_value_t>it.value().get())
+			inc(it)
 
 	cpdef size_t erase_prefix(self, string prefix):
 		return self.hattrie.erase_prefix(prefix)
