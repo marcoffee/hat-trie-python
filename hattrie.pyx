@@ -36,6 +36,9 @@ cdef class HatTrieMap:
 	cpdef void clear(self):
 		self.hattrie.clear()
 
+	def __class_getitem__(cls, object value):
+		return cls
+
 	def __getitem__(self, string key):
 		try:
 			return <p_value_t>self.hattrie.at(key).get()

@@ -33,11 +33,11 @@ setup(
     description="Python bindings for Tessil/hat-trie",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    ext_modules=cythonize(extensions, compiler_directives={
-        "embedsignature": True,
-        "binding": True
-    }),
-    python_requires=">=3.6",
+    ext_modules=cythonize(extensions),
+    python_requires=">=3.12",
     use_2to3=False,
     zip_safe=False,
+    packages=["hattrie"],
+    package_data={"hattrie": ["hattrie/__init__.pyi"]},
+    include_package_data=True,
 )
