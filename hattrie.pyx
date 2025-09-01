@@ -95,6 +95,17 @@ cdef class HatTrieMap:
 
 		return default
 
+	def popitem(self):
+		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_begin()
+
+		if it == self.hattrie.cend():
+			raise KeyError("popitem(): hattrie is empty")
+
+		key = it.key()
+		value = <p_value_t>it.value().get()
+		self.hattrie.erase(it)
+		return (key, value)
+
 	def get(self, string key, object default = None):
 		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_find(key)
 
