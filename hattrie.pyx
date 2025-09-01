@@ -165,9 +165,16 @@ cdef class HatTrieMap:
 
 	def longest_prefix(self, string key):
 		cdef c_const_iterator_t it = self.hattrie.const_longest_prefix(key)
+		cdef string prefix
+
 		while it != self.hattrie.cend():
-			yield (it.key(), <p_value_t>it.value().get())
-			inc(it)
+			prefix = it.key()
+			yield (prefix, <p_value_t>it.value().get())
+
+			if prefix.size() <= 1:
+				break
+
+			it = self.hattrie.const_longest_prefix_ks(prefix.data(), prefix.size() - 1)
 
 	cpdef size_t erase_prefix(self, string prefix):
 		return self.hattrie.erase_prefix(prefix)
