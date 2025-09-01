@@ -126,6 +126,9 @@ cdef class HatTrieMap:
 
 		return result
 
+	def __len__(self):
+		return self.size()
+
 	cpdef cbool insert(self, string key, object value):
 		return self.hattrie.insert(key, PyObjectSmartPtr(<c_value_t>value)).second
 
