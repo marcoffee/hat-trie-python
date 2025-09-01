@@ -11,12 +11,14 @@ from smartptr cimport PyObjectSmartPtr
 
 ctypedef PyObject *c_value_t
 ctypedef object p_value_t
+ctypedef htrie_map[char, PyObjectSmartPtr] c_htrie_t
+ctypedef c_htrie_t.const_iterator c_const_iterator_t
 
 _POP_MISSING = object()
 
 cdef class HatTrieMap:
 
-	cdef htrie_map[char, PyObjectSmartPtr] hattrie
+	cdef c_htrie_t hattrie
 
 	def __init__(self, items = ()):
 		self.update(items)
@@ -63,19 +65,19 @@ cdef class HatTrieMap:
 			return False
 
 	def keys(self):
-		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_begin()
+		cdef c_const_iterator_t it = self.hattrie.const_begin()
 		while it != self.hattrie.cend():
 			yield it.key()
 			inc(it)
 
 	def values(self):
-		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_begin()
+		cdef c_const_iterator_t it = self.hattrie.const_begin()
 		while it != self.hattrie.cend():
 			yield <p_value_t>it.value().get()
 			inc(it)
 
 	def items(self):
-		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_begin()
+		cdef c_const_iterator_t it = self.hattrie.const_begin()
 		while it != self.hattrie.cend():
 			yield (it.key(), <p_value_t>it.value().get())
 			inc(it)
@@ -84,7 +86,7 @@ cdef class HatTrieMap:
 		return self.keys()
 
 	def pop(self, string key, object default = _POP_MISSING):
-		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_find(key)
+		cdef c_const_iterator_t it = self.hattrie.const_find(key)
 
 		if it != self.hattrie.cend():
 			value = <p_value_t>it.value().get()
@@ -97,7 +99,7 @@ cdef class HatTrieMap:
 		return default
 
 	def popitem(self):
-		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_begin()
+		cdef c_const_iterator_t it = self.hattrie.const_begin()
 
 		if it == self.hattrie.cend():
 			raise KeyError("popitem(): hattrie is empty")
@@ -108,7 +110,7 @@ cdef class HatTrieMap:
 		return (key, value)
 
 	def get(self, string key, object default = None):
-		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_find(key)
+		cdef c_const_iterator_t it = self.hattrie.const_find(key)
 
 		if it != self.hattrie.cend():
 			return <p_value_t>it.value().get()
@@ -120,7 +122,7 @@ cdef class HatTrieMap:
 
 	def copy(self):
 		cdef HatTrieMap new_map = HatTrieMap()
-		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_begin()
+		cdef c_const_iterator_t it = self.hattrie.const_begin()
 
 		while it != self.hattrie.cend():
 			new_map.hattrie.insert(it.key(), it.value())
@@ -130,7 +132,7 @@ cdef class HatTrieMap:
 
 	def to_dict(self):
 		result = {}
-		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_begin()
+		cdef c_const_iterator_t it = self.hattrie.const_begin()
 
 		while it != self.hattrie.cend():
 			result[it.key()] = <p_value_t>it.value().get()
@@ -162,7 +164,7 @@ cdef class HatTrieMap:
 		return self.hattrie.count(key)
 
 	def longest_prefix(self, string key):
-		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_longest_prefix(key)
+		cdef c_const_iterator_t it = self.hattrie.const_longest_prefix(key)
 		while it != self.hattrie.cend():
 			yield (it.key(), <p_value_t>it.value().get())
 			inc(it)
