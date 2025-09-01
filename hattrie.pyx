@@ -11,6 +11,8 @@ from smartptr cimport PyObjectSmartPtr
 ctypedef PyObject *c_value_t
 ctypedef object p_value_t
 
+pop_missing = object()
+
 cdef class HatTrieMap:
 
 	cdef htrie_map[char, PyObjectSmartPtr] hattrie
@@ -49,8 +51,7 @@ cdef class HatTrieMap:
 		self.hattrie.insert(key, PyObjectSmartPtr(<c_value_t>value))
 
 	def __delitem__(self, string key):
-		cdef size_t num = self.hattrie.erase(key)
-		if num == 0:
+		if self.hattrie.erase(key) == 0:
 			raise KeyError(key)
 
 	def __contains__(self, string key):
@@ -81,8 +82,18 @@ cdef class HatTrieMap:
 	def __iter__(self):
 		return self.keys()
 
-	def pop(self, string key):
-		raise NotImplementedError
+	def pop(self, string key, object default = pop_missing):
+		cdef htrie_map[char, PyObjectSmartPtr].const_iterator it = self.hattrie.const_find(key)
+
+		if it != self.hattrie.cend():
+			value = <p_value_t>it.value().get()
+			self.hattrie.erase(it)
+			return value
+
+		if default is pop_missing:
+			raise KeyError(key)
+
+		return default
 
 	cpdef cbool insert(self, string key, object value):
 		return self.hattrie.insert(key, PyObjectSmartPtr(<c_value_t>value)).second
