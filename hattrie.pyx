@@ -170,3 +170,9 @@ cdef class HatTrieMap:
 	@burst_threshold.setter
 	def burst_threshold(self, size_t threshold):
 		self.hattrie.burst_threshold(threshold)
+
+	def __repr__(self):
+		items_str = ", ".join(f"{key!r}: {value!r}" for key, value in self.items())
+		return f"HatTrieMap({{{items_str}}})"
+
+MutableMapping.register(HatTrieMap)
