@@ -191,6 +191,14 @@ cdef class HatTrieMap:
 
 			it = self.hattrie.const_longest_prefix_ks(prefix.data(), prefix.size() - 1)
 
+	def the_longest_prefix(self, string key):
+		cdef c_const_iterator_t it = self.hattrie.const_longest_prefix(key)
+
+		if it != self.hattrie.cend():
+			return (it.key(), <p_value_t>it.value().get())
+
+		return None
+
 	def equal_prefix_range(self, string prefix):
 		cdef c_const_prefix_iterator_pair_t iterators = self.hattrie.const_equal_prefix_range(prefix)
 		cdef c_const_prefix_iterator_t it = iterators.first
